@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="Pong" content="text/html;charset-utf-8">
+  <meta content="utf-8" http-equiv="encoding">
+  <title>"Pong" by Strohmer</title>
+</head>
+<body>
+  <center>
+  <h2>Pong</h2>
+  <h3>< /> w/ &hearts; by Jason @ <a href="http://www.github.com/strohmer"> Github </a></h3><br>
+
+  <!-- Create the black background for the game -->
+  <canvas id="pong" width="600" height="500"></canvas>
+
+  <!-- Javascript -->
+  <script type="text/javascript">
+    var canvas;
+    var canvasMaterial;
+    var paddle1v, paddle2v, p1score = 0, p2score = 0;
+    var ballX = 75, ballY = 100;
+    var ballVelX = 6, ballVelY = 6;
+    var endGame = false;
+    var winner = "";
+    var winmessage = winner + "wins!";
+    const PADDLEHEIGHT = 100;
+    const PADDLETHICK = 10;
+    const AISPEED = 6;
+    const WINSCORE = 1;
+
+    window.onload = function() {
+      //Make sure this is loading
+      console.log("A tisket, a tasket, a green and yellow basket.");
+      canvas = document.getElementById('pong');
+      canvasMaterial = canvas.getContext('2d');
+      paddle2v = (canvas.height/2) - (PADDLEHEIGHT/2);
+
+      canvas.addEventListener('mousemove', function(evt) {
+        var mousePosition = getMousePosition(evt);
+        paddle1v = mousePosition.y - (PADDLEHEIGHT/2);
+      } );
+
+      //Update the game at 30 frames per second
+      setInterval(function() {
+        updateDirections();
+        drawGame();
+      }, 1000/30);
+    }
+
+    function makeCircle (centerX, centerY, radius, color) {
+      canvasMaterial.fillStyle = color;
+      canvasMaterial.beginPath();
+      canvasMaterial.arc(centerX,centerY,radius,0,Math.PI*2,false);
+      canvasMaterial.fill();
+    }
+
+    function makeRectangle (toplX, toplY, width, height, color) {
+      canvasMaterial.fillStyle = color;
+      canvasMaterial.rect(toplX, toplY, width, height);
+      canvasMaterial.fill();
+    }
+
+    //Reverse ball's direction if it reaches any edge
+    function updateDirections () {
+      if (endGame) {
+        return;
+      }
+      AIPaddle();
+
+      //Player's Side
+      if (ballX < 0) {
+        if (ballY == paddle1v) {
+          ballVelX *= -1;
+          ballVelY *= -5;
+        } else if (ballY > paddle1v+1 && ballY < paddle1v+9) {
+          ballVelX *= -1;
+          ballVelY *= -4.15;
+        } else if (ballY > paddle1v+10 && ballY < paddle1v+19) {
+          ballVelX *= -1;
+          ballVelY *= -3.32;
+        } else if (ballY > paddle1v+20 && ballY < paddle1v+29) {
+          ballVelX *= -1;
+          ballVelY *= -2.49;
+        } else if (ballY > paddle1v+30 && ballY < paddle1v+39) {
+          ballVelX *= -1;
+          ballVelY *= -1.66;
+        } else if (ballY > paddle1v+40 && ballY < paddle1v+49) {
+          ballVelX *= -1;
+          ballVelY *= -0.83;
+        } else if (ballY == paddle1v + (PADDLEHEIGHT/2)) {
+          ballVelX *= -1;
+          ballVelY *= 0;
+        } else if (ballY > paddle1v+51 && ballY < paddle1v+59) {
+          ballVelX *= -1;
+          ballVelY *= 0.83;
+        } else if (ballY > paddle1v+60 && ballY < paddle1v+69) {
+          ballVelX *= -1;
+          ballVelY *= 1.66;
+        } else if (ballY > paddle1v+70 && ballY < paddle1v+79) {
+          ballVelX *= -1;
+          ballVelY *= 2.49;
+        } else if (ballY > paddle1v+80 && ballY < paddle1v+89) {
+          ballVelX *= -1;
+          ballVelY *= 3.32;
+        } else if (ballY > paddle1v+90 && ballY < paddle1v+99) {
+          ballVelX *= -1;
+          ballVelY *= 4.15;
+        } else if (ballY == paddle1v + PADDLEHEIGHT) {
+          ballVelX *= -1;
+          ballVelY *= 5;
+        } else {
+          p2score++;
+          resetBall();
+        }
+      }
+
+      //AI Side
+      if (ballX > canvas.width) {
+        if (ballY > paddle2v && ballY < paddle2v+PADDLEHEIGHT) {
+          ballVelX *= -1;
+        } else {
+          p1score++;
+          resetBall();
+        }
+      }
+
+      //Bounce off the top and bottom of arena
+      if (ballY > canvas.height || ballY < 0) {
+        ballVelY *= -1;
+      }
+
+      //Update ball's position
+      ballX += ballVelX;
+      ballY += ballVelY;
+    }
+
+    //Grab the mouse's coordinates
+    function getMousePosition(evt) {
+      var rect = canvas.getBoundingClientRect(), root = document.documentElement;
+      var mouseX = evt.clientX - rect.left - root.scrollLeft;
+      var mouseY = evt.clientY - rect.top - root.scrollTop;
+      return {
+        x:mouseX, y:mouseY
+      };
+    }
+
+    //The artificial intelligence for player 2
+    function AIPaddle() {
+      if (ballY > paddle2v+20 && ballY < paddle2v+80) {
+        //do nothing
+      } else if (ballY < paddle2v+(PADDLEHEIGHT/2)) {
+        paddle2v -= AISPEED;
+      } else if (ballY > paddle2v+(PADDLEHEIGHT/2)) {
+        paddle2v += AISPEED;
+      }
+    }
+
+    function resetBall() {
+      if (p1score == WINSCORE || p2score == WINSCORE) {
+        if (p1score == WINSCORE) {
+          winner = "left";
+        } else {
+          winner = "right";
+        }
+        endGame = true;
+      } else {
+        ballVelX = 6;
+        ballVelY = 6;
+        ballX = canvas.width/2;
+        ballY = canvas.height/2;
+      }
+    }
+
+    function drawGame() {
+      //Draw the background
+      canvasMaterial.fillStyle = 'black';
+      canvasMaterial.fillRect(0, 0, canvas.width, canvas.height);
+      if (endGame) {
+        canvasMaterial.fillStyle = "#ffffff";
+        canvasMaterial.textAlign = 'center';
+        canvasMaterial.fillText(winmessage,canvas.width/4,canvas.height/6);
+      } else {
+        //Draw the ball
+        makeCircle(ballX,ballY,10,'white');
+        //Draw the paddles - player paddle
+        makeRectangle (0,paddle1v,PADDLETHICK,100,'white');
+        //AI paddle
+        makeRectangle (canvas.width-PADDLETHICK,paddle2v,PADDLETHICK,100,'white');
+        //Scores
+        canvasMaterial.fillStyle = "#ffffff";
+        canvasMaterial.fillText(p1score,canvas.width/4,canvas.height/6);
+        canvasMaterial.fillText(p2score,canvas.width/4 + canvas.width/2,canvas.height/6);
+      }
+    }
+
+  </script>
+  </center>
+</body>
+</html>
