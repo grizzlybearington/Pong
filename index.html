@@ -3,12 +3,21 @@
 <head>
   <meta name="Pong" content="text/html;charset-utf-8">
   <meta content="utf-8" http-equiv="encoding">
+  <meta name="keywords" content="pong, strohmer">
+
+  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet"> 
+
+  <script src="https://use.fontawesome.com/6b91a7da28.js"></script>
+
   <title>"Pong" by Strohmer</title>
 </head>
 <body>
   <center>
-  <h2>Pong</h2>
-  <h3>< /> w/ &hearts; by Jason @ <a href="http://www.github.com/strohmer"> Github </a></h3><br>
+  <font face=Press+Start+2P>
+  <h1>Pong</h1>
+  <h4><i class="fa fa-code" aria-hidden="true"></i>
+ w/ <i class="fa fa-heart" aria-hidden="true"></i>
+ by Jason @ <a href="https://github.com/strohmer/Pong"> Github </a></font></h4><br>
 
   <!-- Create the black background for the game -->
   <canvas id="pong" width="600" height="500"></canvas>
@@ -25,12 +34,10 @@
     var winmessage = winner + "wins!";
     const PADDLEHEIGHT = 100;
     const PADDLETHICK = 10;
-    const AISPEED = 6;
-    const WINSCORE = 1;
+    const AISPEED = 7;
+    const WINSCORE = 5;
 
     window.onload = function() {
-      //Make sure this is loading
-      console.log("A tisket, a tasket, a green and yellow basket.");
       canvas = document.getElementById('pong');
       canvasMaterial = canvas.getContext('2d');
       paddle2v = (canvas.height/2) - (PADDLEHEIGHT/2);
@@ -192,7 +199,6 @@
         canvasMaterial.fillText(p2score,canvas.width/4 + canvas.width/2,canvas.height/6);
       }
     }
-
   </script>
   </center>
 </body>
